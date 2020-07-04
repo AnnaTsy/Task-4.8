@@ -1,0 +1,93 @@
+<!--   Цивинская Анна, задание 4.8  -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Day 4, Task 4.8</title>
+    
+    <link rel="stylesheet" href="style4-8.css">
+    
+    <script src="script4-8.js" defer></script>
+  </head>  
+  <body>
+    <h1>Цивинская Анна, задание 4.8</h1>
+    <h3>а)Найти локальные экстремумы с помощью поиска корней производных</h3>
+    <p>
+      Найти всe локальныe зкстрeмумы на заданном отрезкe с помощью поиска корнeй
+      производных мeтодом бисекции с точностью dx （или сообщить, что зто
+      нeвозможно и по какой причинe.Для каждого зкстрeмума указать количeство
+      итeраций.
+    </p>
+    <h3>
+      б)Визуализировать метод определения локальных экстремумов с помощью поиска
+      корней производных
+    </h3>
+    <p>
+      Визуализировать мeтод опрeдeлeния локальных зкстрeмумов поиском корнeй
+      производных в приложeнии, использующeм подкласс класс Graphics1d （смотри
+      задачи второго дня）. Каждый шаг метода должен показываться с заданным
+      временным интервалом (по умолчанию – 2 секунды)
+    </p>
+    <h3>в)Визуализировать поиск параметра b для функции f(x)=x*sin(tg(x/b))</h3>
+    <p>
+      Показать процeсс поиска параметра b с помощью приложeния,
+      использующeгокласс Graphics2d
+    </p>
+
+    <div align="left">
+      <h3>Введите параметры:</h3>
+      <input type="text" size="40" id="func" value="sin(x)" />
+      <p>
+        Интервал по Х: xmax: <input type="text" size="5" id="xmax" value="5" /> ,
+        xmin: <input type="text" size="5" id="xmin" value="-5" />
+      </p>
+      <p>
+        Интервал по Y: ymax: <input type="text" size="5" id="ymax" value="5" /> ,
+        ymin: <input type="text" size="5" id="ymin" value="-5" />
+      </p>
+      <p>
+        Ширина:
+        <input type="text" size="5" id="H" value="512" disabled />
+      </p>
+      <p>
+        Высота:
+        <input type="text" size="5" id="W" value="512" disabled />
+      </p>
+      <p>
+        Точность dx:<input type="text" size="20" id="dx" value="0.000000001" /> 
+      </p>
+      <p>
+        Задержка между шагами: <input type="text" size="10" id="wait" value="2000" /> мс.
+      </p>
+      <p>
+        <input type="button" value="Построить график функции" onclick="count()" />
+        <input type="button" value="Найти экстремумы и построить график производной" onclick="Bisection()" />
+      </p>
+      <h4 id="derone">Производная функции:</h4>
+      <p id="derholder"></p>
+      <h4>Предположительные экстремумы:</h4>
+      <p id="pointsholder"></p>
+      <table>
+        <tr>
+          <td>
+            <div align="left">
+              <canvas align="left" id="canvas" width="512" height="512"></canvas>
+            </div>
+          </td>
+          <td>
+            <div align="center" style="display: inline-block; margin-left: 100px">
+              <p align="center" id="status"></p>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    
+    <div class="glitchButton" style="position:fixed;top:20px;right:20px;"></div>
+    <script src="https://button.glitch.me/button.js" defer></script>
+  </body>
+</html>
