@@ -9,7 +9,8 @@
 var pict = document.getElementById("canvas");
 var ctx = pict.getContext("2d");
 
-class pictics1D {
+
+class Graphics1D {
   xmin = -5;
   xmax = 5;
   ymin = -5;
@@ -18,7 +19,8 @@ class pictics1D {
   H = 512;
   Fmax = this.ymin;
   Fmin = this.ymax;
-  f = function(x) {
+  B = 1;
+  f = function(x, b) {
     return x * x - 9;
   };
   zer = new Map();
@@ -32,7 +34,7 @@ class pictics1D {
       x < this.xmax;
       x += (-this.xmin + this.xmax) / this.W
     ) {
-      var res = this.f(x);
+      var res = this.f(x, this.B);
       this.fvalues[x] = res;
       this.Fmax = Math.max(this.Fmax, res);
       this.Fmin = Math.min(this.Fmin, res);
@@ -45,6 +47,7 @@ class pictics1D {
     gaps = "magenta",
     bg = "#DCDCDC" //grey
   ) {
+    this.B = parseFloat(document.getElementById("b").value);
     this.evaluate();
     let stepx = this.W / (-this.xmin + this.xmax);
     let stepy = this.H / (-this.ymin + this.ymax);
@@ -80,7 +83,7 @@ class pictics1D {
     ctx.beginPath();
     ctx.lineWidth = 1;
     ctx.strokeStyle = dots;
-    ctx.moveTo(zerox + this.xmin * stepx, zeroy - this.f(this.xmin) * stepy);
+    ctx.moveTo(zerox + this.xmin * stepx, zeroy - this.f(this.xmin, this.B) * stepy);
     this.zerocount = 0;
     this.zer.clear();
     for (
@@ -169,7 +172,7 @@ function replaceSequence(str) {
   return str;
 }
 
-var p = new pictics1D();
+var p = new Graphics1D();
 p.draw();
 
 function count() {
@@ -190,9 +193,10 @@ function count() {
   p.xmin = Ixmin;
   p.ymax = Iymax;
   p.ymin = Iymin;
-  p.f = function(x) {
+  p.f = function(x, b) {
     return eval(replaceSequence(If));
   };
+  p.b = parseFloat(document.getElementById("b").value);
   p.draw();
 }
 
@@ -200,7 +204,7 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function InitializeFieldsForNewton() {
+function InitializeFieldsForBisection() {
   var Ixmin = parseFloat(document.getElementById("xmin").value),
     Ixmax = parseFloat(document.getElementById("xmax").value),
     Iymin = parseFloat(document.getElementById("ymin").value),
@@ -209,6 +213,7 @@ function InitializeFieldsForNewton() {
   p.xmin = Ixmin;
   p.ymax = Iymax;
   p.ymin = Iymin;
+  p.B = parseFloat(document.getElementById("b").value);
 }
 
 function replaceDerProblems(str) {
@@ -217,8 +222,8 @@ function replaceDerProblems(str) {
 }
 
 async function Bisection() {
-  InitializeFieldsForNewton();
-  document.getElementById("pointsholder").innerText = "";
+  InitializeFieldsForBisection();
+  //document.getElementById("pointsholder").innerText = "";
   let dx = parseFloat(document.getElementById("dx").value);
   document.getElementById("derone").style.display = "block";
   let der = math
@@ -227,36 +232,35 @@ async function Bisection() {
   document.getElementById("derholder").innerText = der;
   let derfunc = math
     .parser()
-    .evaluate("f(x) = " + document.getElementById("derholder").innerText);
-  let delay = parseFloat(document.getElementById("wait").value);
+    .evaluate("f(x, b) = " + document.getElementById("derholder").innerText);
+  let delay = parseFloat(document.getElementById("time").value);
 
   p.f = derfunc;
-  document.getElementById("status").innerText = "Рисуем производную...";
   p.draw();
 
-  let stepx = p.W / (-p.xmin + p.xmax),
-    stepy = p.H / (-p.ymin + p.ymax);
-  let zerox = -p.xmin * stepx,
-    zeroy = p.ymax * stepy;
+  let stepx = p.W / (-p.xmin + p.xmax);
+  let stepy = p.H / (-p.ymin + p.ymax);
+  let zerox = -p.xmin * stepx;
+  let zeroy = p.ymax * stepy;
   ctx.fillStyle = "#9370DB";
 
   var displayedpoints = 0;
-  await sleep(delay);
+  await sleep(delay*1000);
   for (let i = 1; i <= p.zerocount; i++) {
     document.getElementById("status").innerText =
-      "Находим " + i + "-й корень \n Приближения: \n";
+      "Поиск " + i + "-ого корня... \n";
     var xnow = p.zer[i];
     var xnext = xnow - 1;
     var iterations = 0;
     document.getElementById("status").innerText +=
-      "X" + iterations + " = " + xnow + ";\n";
+      "x" + iterations + " = " + xnow + ";\n";
 
     ctx.beginPath();
     ctx.arc(zerox + xnow * stepx, zeroy, stepx / 30, 0, 180);
     ctx.fill();
     ctx.closePath();
 
-    await sleep(delay);
+    await sleep(delay*1000);
     while (Math.abs(xnext - xnow) > dx) {
       if (xnow == 0) {
         xnext = xnow;
@@ -264,24 +268,24 @@ async function Bisection() {
       }
 
       xnext = (xnow + xnext) / 2;
-      if (derfunc(xnext) == 0) break;
-      if (Math.sign(derfunc(xnext)) == Math.sign(derfunc(xnow))) xnow = xnext;
+      if (derfunc(xnext, p.B) == 0) break;
+      if (Math.sign(derfunc(xnext, p.B)) == Math.sign(derfunc(xnow, p.B))) xnow = xnext;
 
       iterations++;
       document.getElementById("status").innerText +=
-        "X" + iterations + " = " + xnext + ";\n";
+        "x" + iterations + " = " + xnext + ";\n";
 
       ctx.beginPath();
       ctx.arc(zerox + xnext * stepx, zeroy, stepx / 30, 0, 180);
       ctx.fill();
       ctx.closePath();
-      await sleep(delay);
+      await sleep(delay*1000);
     }
 
-    var critical = derfunc(xnext + 0.00001) * derfunc(xnext - 0.00001) > 0;
+    var critical = derfunc(xnext + 0.00001, p.B) * derfunc(xnext - 0.00001, p.B) > 0;
     if (critical) {
       displayedpoints++;
-      var fnow = function(x) {
+      var fnow = function(x, b) {
         return eval(replaceSequence(document.getElementById("func").value));
       };
       document.getElementById("pointsholder").innerText +=
@@ -289,24 +293,26 @@ async function Bisection() {
         displayedpoints +
         " = " +
         xnext +
-        "; f(x) = " +
-        fnow(xnext) +
-        "; Потребовалось " +
+        ";\n f(x" + 
+        displayedpoints +
+        ") = " +
+        fnow(xnext, p.B) +
+        ";\n Потребовалось " +
         iterations +
-        "итераций;\n";
+        " итераций;\n\n";
       document.getElementById("status").innerText +=
         "Корень производной равен " +
         xnext +
-        ". Это будет точкой экстремума.";
+        " и он является точкой экстремума.";
     } else {
       document.getElementById("status").innerText +=
         "Корень производной равен " +
         xnext +
-        ". Это не является точкой экстремума.";
+        ", однако он не является точкой экстремума.";
     }
-    await sleep(delay * 1.5);
+    await sleep(delay*1000);
   }
   if (displayedpoints == 0)
     document.getElementById("pointsholder").innerText =
-      "Экстремумов нет, либо функция не удовлетворяет условиям метода.";
+      "Экстремумов нет (возможно Вы ввели функцию, которая не удовлетворяет условиям метода).";
 }
