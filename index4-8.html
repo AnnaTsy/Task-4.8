@@ -40,14 +40,22 @@
 
     <div align="left">
       <h3>Введите параметры:</h3>
-      <input type="text" size="40" id="func" value="sin(x)" />
+      <table>
+        <tr>
+          <td>f(x) = </td>
+          <td><input type="text" size="40" id="func" value="sin(x)" /></td>
+        </tr>
+      </table>
       <p>
-        Интервал по Х: xmax: <input type="text" size="5" id="xmax" value="5" /> ,
-        xmin: <input type="text" size="5" id="xmin" value="-5" />
+        Параметр b: <input type="text" size="5" id="b" value="1">
       </p>
       <p>
-        Интервал по Y: ymax: <input type="text" size="5" id="ymax" value="5" /> ,
-        ymin: <input type="text" size="5" id="ymin" value="-5" />
+        Интервал по Х: xmin: <input type="text" size="5" id="xmin" value="-5" />,
+         xmax: <input type="text" size="5" id="xmax" value="5" />
+      </p>
+      <p>
+        Интервал по Y: ymin: <input type="text" size="5" id="ymin" value="-5" />,
+        ymax: <input type="text" size="5" id="ymax" value="5" />
       </p>
       <p>
         Ширина:
@@ -61,15 +69,20 @@
         Точность dx:<input type="text" size="20" id="dx" value="0.000000001" /> 
       </p>
       <p>
-        Задержка между шагами: <input type="text" size="10" id="wait" value="2000" /> мс.
+        Время паузы между каждым шагом: <input type="text" size="10" id="time" value="2" /> сек.
       </p>
       <p>
         <input type="button" value="Построить график функции" onclick="count()" />
         <input type="button" value="Найти экстремумы и построить график производной" onclick="Bisection()" />
       </p>
       <h4 id="derone">Производная функции:</h4>
-      <p id="derholder"></p>
-      <h4>Предположительные экстремумы:</h4>
+      <table>
+        <tr>
+          <td>f'(x) = </td>
+          <td id="derholder">...</td>
+        </tr>
+      </table>
+      <h4>Экстремумы:</h4>
       <p id="pointsholder"></p>
       <table>
         <tr>
@@ -86,8 +99,5 @@
         </tr>
       </table>
     </div>
-    
-    <div class="glitchButton" style="position:fixed;top:20px;right:20px;"></div>
-    <script src="https://button.glitch.me/button.js" defer></script>
   </body>
 </html>
